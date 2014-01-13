@@ -13,6 +13,10 @@ func (stack *Stack) Pop() (value interface{}) {
 	return
 }
 
+func (stack *Stack) IsEmpty() bool {
+	return stack.list.IsEmpty()
+}
+
 func (stack *Stack) Display() {
 	stack.list.Display()
 }
