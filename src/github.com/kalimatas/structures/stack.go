@@ -13,6 +13,12 @@ func (stack *Stack) Pop() (value interface{}) {
 	return
 }
 
+func (stack *Stack) Peek() (value interface{}) {
+	value = stack.list.DeleteFirst()
+	stack.list.InsertFirst(value)
+	return
+}
+
 func (stack *Stack) IsEmpty() bool {
 	return stack.list.IsEmpty()
 }

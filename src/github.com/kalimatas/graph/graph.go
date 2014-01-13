@@ -1,11 +1,17 @@
 package graph
 
+import (
+	"fmt"
+	"github.com/kalimatas/structures"
+)
+
 const MAX_VERTS uint = 20
 
 type Graph struct {
 	vertexList  [MAX_VERTS]*Vertex
 	adjMatrix   [MAX_VERTS][MAX_VERTS]bool // adjacency matrix
-	VertexCount uint                       // current number of verteces
+	vertexCount uint                       // current number of verteces
+	stack       structures.Stack           // for Dfs
 }
 
 type OutOfBoundariesError struct {
@@ -17,12 +23,13 @@ func (e *OutOfBoundariesError) Error() string {
 }
 
 func (graph *Graph) AddVertex(vertex *Vertex) (err error) {
-	if graph.VertexCount >= MAX_VERTS {
+	if graph.vertexCount >= MAX_VERTS {
+		// todo: expand array
 		err = &OutOfBoundariesError{"Reached max verteces count"}
 	}
 
-	graph.VertexCount++
-	graph.vertexList[graph.VertexCount] = vertex
+	graph.vertexList[graph.vertexCount] = vertex
+	graph.vertexCount++
 	return
 }
 
@@ -38,5 +45,43 @@ func (graph *Graph) AddEdge(start, end uint) (err error) {
 }
 
 func (graph *Graph) GetVertextCount() (count uint) {
-	return graph.VertexCount
+	return graph.vertexCount
+}
+
+// Depth-first search
+func (graph *Graph) Dfs() {
+	if graph.vertexCount == 0 {
+		return
+	}
+
+	graph.vertexList[0].IsVisited = true
+	fmt.Printf("%s ", graph.vertexList[0])
+	graph.stack.Push(uint(0))
+	
+	for ; !graph.stack.IsEmpty() ; {
+		adjVertex := graph.getAdjUnvisitedVertex(graph.stack.Peek().(uint))
+		if adjVertex == -1 {
+			graph.stack.Pop()
+		} else {
+			graph.vertexList[adjVertex].IsVisited = true
+			fmt.Printf("%s ", graph.vertexList[adjVertex])
+			graph.stack.Push(uint(adjVertex))
+		}
+	}
+
+	// reset flags
+	for i := uint(0); i < graph.vertexCount; i++ {
+		graph.vertexList[i].IsVisited = false
+	}
+}
+
+// Returns not visited adjacent vertex.
+func (graph *Graph) getAdjUnvisitedVertex(vertex uint) (unvisited int) {
+	for i := uint(0); i < graph.vertexCount; i++ {
+		if graph.adjMatrix[vertex][i] == true && graph.vertexList[i].IsVisited == false {
+			return int(i)
+		}
+	}
+
+	return -1
 }
