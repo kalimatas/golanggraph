@@ -1,7 +1,7 @@
 package main
 
 import (
-	_ "fmt"
+	"fmt"
 	"github.com/kalimatas/graph"
 	_ "github.com/kalimatas/structures"
 )
@@ -22,5 +22,11 @@ func main() {
 	theGraph.AddEdge(3, 4) // DE
 	theGraph.AddEdge(4, 5) // EF
 
+	fmt.Println("Depth-first search")
 	theGraph.Dfs()	
+	
+	fmt.Println()
+	
+	fmt.Println("Breadth-first search")
+	theGraph.Bfs()
 }

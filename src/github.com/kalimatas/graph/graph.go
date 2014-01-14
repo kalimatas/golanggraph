@@ -12,6 +12,7 @@ type Graph struct {
 	adjMatrix   [MAX_VERTS][MAX_VERTS]bool // adjacency matrix
 	vertexCount uint                       // current number of verteces
 	stack       structures.Stack           // for Dfs
+	queue       structures.Queue           // for Bfs
 }
 
 type OutOfBoundariesError struct {
@@ -57,8 +58,8 @@ func (graph *Graph) Dfs() {
 	graph.vertexList[0].IsVisited = true
 	fmt.Printf("%s ", graph.vertexList[0])
 	graph.stack.Push(uint(0))
-	
-	for ; !graph.stack.IsEmpty() ; {
+
+	for !graph.stack.IsEmpty() {
 		adjVertex := graph.getAdjUnvisitedVertex(graph.stack.Peek().(uint))
 		if adjVertex == -1 {
 			graph.stack.Pop()
@@ -69,6 +70,34 @@ func (graph *Graph) Dfs() {
 		}
 	}
 
+	// reset flags
+	for i := uint(0); i < graph.vertexCount; i++ {
+		graph.vertexList[i].IsVisited = false
+	}
+}
+
+func (graph *Graph) Bfs() {
+	if graph.vertexCount == 0 {
+		return
+	}
+
+	graph.vertexList[0].IsVisited = true
+	fmt.Printf("%s ", graph.vertexList[0])
+	graph.queue.Insert(uint(0))
+	
+	for !graph.queue.IsEmpty() {
+		currentVertex := graph.queue.Remove().(uint)
+		
+		for nextVertex := graph.getAdjUnvisitedVertex(currentVertex); 
+			nextVertex != -1;
+			nextVertex = graph.getAdjUnvisitedVertex(currentVertex)	{
+			
+			graph.vertexList[nextVertex].IsVisited = true
+			fmt.Printf("%s ", graph.vertexList[nextVertex])
+			graph.queue.Insert(uint(nextVertex))
+		}			
+	}
+	
 	// reset flags
 	for i := uint(0); i < graph.vertexCount; i++ {
 		graph.vertexList[i].IsVisited = false
